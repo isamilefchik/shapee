@@ -8,6 +8,7 @@ import (
 	"github.com/mjibson/go-dsp/window"
 	"math"
 	"math/cmplx"
+	"sync"
 )
 
 // ComputeSTFT computes the STFT of the input waveform and returns
@@ -15,32 +16,45 @@ import (
 func ComputeSTFT(wave []float64, winShift int, winLen int) [][]complex128 {
 	fmt.Printf("Performing STFT...\n")
 
-	num_windows := int(math.Ceil(float64(len(wave)) / float64(winShift)))
+	num_windows := int(math.Floor(float64(len(wave)) / float64(winShift)))
 
 	// Check and add zero-padding if it is needed at end of audio to make room
 	// for final STFT window.
-	waveEndLen := len(wave[(num_windows-1)*winShift : len(wave)])
+	waveEndLen := len(wave[num_windows*winShift:])
 	if waveEndLen < winLen {
 		zeros := make([]float64, winLen-waveEndLen)
+		fmt.Println(len(wave))
 		wave = append(wave, zeros...)
+		fmt.Println(len(wave))
 	}
 
 	stft := make([][]complex128, num_windows)
 
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(num_windows)
+
 	for i := 0; i < num_windows; i++ {
-		for j := i * winShift; j < (i+1)*winShift; j++ {
+		iGo := i
+
+		go func() {
+			defer waitGroup.Done()
 			waveWindow := make([]float64, winLen)
-			copy(waveWindow, wave[j:j+winLen])
+			copy(waveWindow, wave[iGo*winShift:iGo*winShift+winLen])
 			window.Apply(waveWindow, window.Hamming)
-			stft[i] = fft.FFTReal(waveWindow)
-		}
+			stft[iGo] = fft.FFTReal(waveWindow)
+		}()
+
 	}
+
+	waitGroup.Wait()
 
 	return stft
 }
 
 // ComputeISTFT recovers the time-series from an STFT in complex form.
 func ComputeISTFT(stft [][]complex128, winShift int) []float64 {
+	fmt.Println("Calculating iSTFT")
+	// TODO: Is this right?!?! Can't be. Don't make sense. Fix this.
 	wave := make([]float64, winShift*len(stft))
 	realiFFTs := make([][]float64, len(stft))
 

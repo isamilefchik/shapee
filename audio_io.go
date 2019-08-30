@@ -44,6 +44,6 @@ func ImportAudio(inputPath string) ([]float64, *wav.WavFormat) {
 }
 
 // ExportAudio exports a .wav file from
-func ExportAudio(wave []float64, exportPath string) {
+func ExportAudio(wave []float64, wavFormat *wav.WavFormat, exportPath string) {
 	// TODO: Export audio
 }
