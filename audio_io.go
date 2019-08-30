@@ -9,35 +9,41 @@ import (
 
 // ImportAudio imports a .wav file and returns the audio waveform as well
 // as the bitrate, samplerate, and number of channels.
-func ImportAudio(input_path string) ([]float64, uint16, uint32, uint16) {
-	number_of_samples := uint32(math.MaxUint32)
+func ImportAudio(inputPath string) ([]float64, *wav.WavFormat) {
+	numSamples := uint32(math.MaxUint32)
 
 	blockAlign := 4
-	file, err := os.Open(input_path)
+	file, err := os.Open(inputPath)
 	if err != nil {
 		panic(err)
 	}
 
 	reader := wav.NewReader(file)
-	wavformat, err_rd := reader.Format()
-	if err_rd != nil {
-		panic(err_rd)
+	wavFormat, errRd := reader.Format()
+	if errRd != nil {
+		panic(errRd)
 	}
 
-	if wavformat.AudioFormat != wav.AudioFormatPCM {
+	if wavFormat.AudioFormat != wav.AudioFormatPCM {
 		panic("Audio format is invalid ")
 	}
 
-	if int(wavformat.BlockAlign) != blockAlign {
-		fmt.Println("Block align is invalid ", wavformat.BlockAlign)
+	if int(wavFormat.BlockAlign) != blockAlign {
+		fmt.Println("Block align is invalid ", wavFormat.BlockAlign)
 	}
 
-	samples, err := reader.ReadSamples(number_of_samples)
-	wav_samples := make([]float64, 0)
+	samples, err := reader.ReadSamples(numSamples)
+	wavSamples := make([]float64, 0)
 
 	for _, curr_sample := range samples {
-		wav_samples = append(wav_samples, reader.FloatValue(curr_sample, 0))
+		wavSamples = append(wavSamples, reader.FloatValue(curr_sample, 0))
 	}
 
-	return wav_samples, wavformat.BitsPerSample, wavformat.SampleRate, wavformat.NumChannels
+	//return wavSamples, wavFormat.BitsPerSample, wavFormat.SampleRate, wavFormat.NumChannels
+	return wavSamples, wavFormat
+}
+
+// ExportAudio exports a .wav file from
+func ExportAudio(wave []float64, exportPath string) {
+	// TODO: Export audio
 }

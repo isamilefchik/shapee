@@ -8,44 +8,42 @@ import (
 
 func main() {
 	inFreqPath := flag.String("i_f", "./music/objekt.wav", "Filepath to frequency reference audio.")
-	inAmpPath := flag.String("i_a", "./music/olixl.wav", "Filepath to amplitude reference audio.")
-	//outPath := flag.String("o", "./music/result.wav", "Output audio filepath.")
+	//inAmpPath := flag.String("i_a", "./music/olixl.wav", "Filepath to amplitude reference audio.")
+	outPath := flag.String("o", "./music/result.wav", "Output audio filepath.")
 	frameSize := *(flag.Int("stft_len", 1024, "STFT frame size in number of samples."))
 	frameShift := *(flag.Int("stft_shift", 1000, "STFT frame shift in number of samples."))
 	flag.Parse()
 
 	fmt.Println("Importing freq ref audio...")
-	freqW, _, _, freqNumChannels := shapee.ImportAudio(*inFreqPath)
-	//freqW, freqBits, freqSR, freqNumChannels := shapee.ImportAudio(*inFreqPath)
-	fmt.Println("Importing amp ref audio...")
-	ampW, _, _, ampNumChannels := shapee.ImportAudio(*inAmpPath)
+	freqWav, freqFormat := shapee.ImportAudio(*inFreqPath)
+	//freqWav, freqBits, freqSR, freqNumChannels := shapee.ImportAudio(*inFreqPath)
+	//fmt.Println("Importing amp ref audio...")
 	//ampW, ampBits, ampSR, ampNumChannels := shapee.ImportAudio(*inAmpPath)
+	ampW, ampFormat := shapee.ImportAudio(*inAmpPath)
 
 	var freqMag [][]float64
-	//var freqPhase [][]float64
+	var freqPhase [][]float64
 	//var ampMag [][]float64
 	//var ampPhase [][]float64
 
 	if freqNumChannels == 1 {
-		freqMag, _ = shapee.ComputeSTFT(freqW, frameShift, frameSize)
-		//freqMag, freqPhase := shapee.ComputeSTFT(freqW, frameShift, frameSize)
+		freqSTFT := shapee.ComputeSTFT(freqWav, frameShift, frameSize)
+		freqMags, freqPhases := shapee.ComplexToPolar(freqSTFT)
 	} else {
-		freqMag, _ = shapee.ComputeSTFT(freqW, frameShift, frameSize)
-		//freqMag, freqPhase := shapee.ComputeSTFT(freqW, frameShift, frameSize)
+		freqSTFT := shapee.ComputeSTFT(freqWav, frameShift, frameSize)
+		freqMags, freqPhases := shapee.ComplexToPolar(freqSTFT)
 	}
 
-	if ampNumChannels == 1 {
-		_, _ = shapee.ComputeSTFT(ampW, frameShift, frameSize)
-		//ampMag, ampPhase := shapee.ComputeSTFT(ampW, frameShift, frameSize)
-	} else {
-		_, _ = shapee.ComputeSTFT(ampW, frameShift, frameSize)
-		//ampMag, ampPhase := shapee.ComputeSTFT(ampW, frameShift, frameSize)
-	}
+	//if ampNumChannels == 1 {
+	//ampMag, ampPhase := shapee.ComputeSTFT(ampW, frameShift, frameSize)
+	//} else {
+	//ampMag, ampPhase := shapee.ComputeSTFT(ampW, frameShift, frameSize)
+	//}
 
-	fmt.Println(freqMag)
+	//fmt.Println(len(freqMag[0]))
 
 	// So Go doesn't get mad at me:
-	//fmt.Println(freqW[0])
+	//fmt.Println(freqWav[0])
 	//fmt.Println(outPath)
 	//fmt.Println(frameSize)
 	//fmt.Println(frameShift)
