@@ -2,8 +2,6 @@ package shapee
 
 import (
 	"fmt"
-	//"github.com/r9y9/gossp/stft"
-	//"github.com/r9y9/gossp/window"
 	"github.com/mjibson/go-dsp/fft"
 	"github.com/mjibson/go-dsp/window"
 	"math"
@@ -23,9 +21,7 @@ func ComputeSTFT(wave []float64, winShift int, winLen int) [][]complex128 {
 	waveEndLen := len(wave[num_windows*winShift:])
 	if waveEndLen < winLen {
 		zeros := make([]float64, winLen-waveEndLen)
-		fmt.Println(len(wave))
 		wave = append(wave, zeros...)
-		fmt.Println(len(wave))
 	}
 
 	stft := make([][]complex128, num_windows)
@@ -35,15 +31,17 @@ func ComputeSTFT(wave []float64, winShift int, winLen int) [][]complex128 {
 
 	for i := 0; i < num_windows; i++ {
 		iGo := i
-
 		go func() {
 			defer waitGroup.Done()
 			waveWindow := make([]float64, winLen)
 			copy(waveWindow, wave[iGo*winShift:iGo*winShift+winLen])
 			window.Apply(waveWindow, window.Hamming)
-			stft[iGo] = fft.FFTReal(waveWindow)
+			cmplxWindow := make([]complex128, winLen)
+			for j := range cmplxWindow {
+				cmplxWindow[j] = complex(waveWindow[j], 0.0)
+			}
+			stft[iGo] = fft.FFT(cmplxWindow)
 		}()
-
 	}
 
 	waitGroup.Wait()
@@ -54,26 +52,42 @@ func ComputeSTFT(wave []float64, winShift int, winLen int) [][]complex128 {
 // ComputeISTFT recovers the time-series from an STFT in complex form.
 func ComputeISTFT(stft [][]complex128, winShift int) []float64 {
 	fmt.Println("Calculating iSTFT")
-	// TODO: Is this right?!?! Can't be. Don't make sense. Fix this.
-	wave := make([]float64, winShift*len(stft))
+	wave := make([]float64, winShift*len(stft)+(2*len(stft[0])))
 	realiFFTs := make([][]float64, len(stft))
 
+	// IFFTs:
 	for i := range stft {
 		iFFT := fft.IFFT(stft[i])
 		realiFFTs[i] = make([]float64, len(iFFT))
 		for j := range iFFT {
-			realiFFTs[i][j] = cmplx.Abs(iFFT[j])
+			realiFFTs[i][j] = real(iFFT[j])
 		}
 		window.Apply(realiFFTs[i], window.Hamming)
 	}
 
-	// Overlap add
+	// Overlap add:
 	winIndex := 0
 	for i := range realiFFTs {
 		for j := range realiFFTs[i] {
 			wave[winIndex+j] += realiFFTs[i][j]
 		}
 		winIndex += winShift
+	}
+
+	// Normalization:
+	max := 0.
+	for i := range wave {
+		if math.Abs(wave[i]) > max {
+			max = math.Abs(wave[i])
+		}
+	}
+	fmt.Printf("Max: %f\n", max)
+	for i := range wave {
+		if math.Abs(wave[i]) < max {
+			wave[i] = 0.5 * (wave[i] / max)
+		} else {
+			wave[i] = 0.5
+		}
 	}
 
 	return wave
@@ -84,8 +98,8 @@ func ComplexToPolar(stft [][]complex128) ([][]float64, [][]float64) {
 	stftMag := make([][]float64, len(stft))
 	stftAng := make([][]float64, len(stft))
 	for i := range stft {
-		stftMag[i] = make([]float64, len(stft[i])/2)
-		stftAng[i] = make([]float64, len(stft[i])/2)
+		stftMag[i] = make([]float64, len(stft[i]))
+		stftAng[i] = make([]float64, len(stft[i]))
 		for j := range stftMag[i] {
 			stftMag[i][j], stftAng[i][j] = cmplx.Polar(stft[i][j])
 		}

@@ -11,7 +11,7 @@ func main() {
 	//inAmpPath := flag.String("i_a", "./music/olixl.wav", "Filepath to amplitude reference audio.")
 	outPath := flag.String("o", "./music/result.wav", "Output audio filepath.")
 	winLen := *(flag.Int("stft_len", 1024, "STFT window size in number of samples."))
-	winShift := *(flag.Int("stft_shift", 1000, "STFT window shift in number of samples."))
+	winShift := *(flag.Int("stft_shift", 100, "STFT window shift in number of samples."))
 	flag.Parse()
 
 	fmt.Println("Importing freq ref audio...")
@@ -21,32 +21,38 @@ func main() {
 	//ampW, ampBits, ampSR, ampNumChannels := shapee.ImportAudio(*inAmpPath)
 	//ampW, ampFormat := shapee.ImportAudio(*inAmpPath)
 
-	var freqSTFT [][]complex128
-	var freqMags [][]float64
-	var freqPhases [][]float64
+	//var freqSTFT [][]complex128
+	//var freqMags [][]float64
+	//var freqPhases [][]float64
 
 	//var ampSTFT [][]complex128
 	//var ampMag [][]float64
 	//var ampPhase [][]float64
 
-	if freqFormat.NumChannels == 1 {
-		freqSTFT = shapee.ComputeSTFT(freqWav, winShift, winLen)
-		freqMags, freqPhases = shapee.ComplexToPolar(freqSTFT)
-	} else {
-		freqSTFT = shapee.ComputeSTFT(freqWav, winShift, winLen)
-		freqMags, freqPhases = shapee.ComplexToPolar(freqSTFT)
-	}
+	//if freqFormat.NumChannels == 1 {
+	//freqSTFT = shapee.ComputeSTFT(freqWav[0], winShift, winLen)
+	//freqMags, freqPhases = shapee.ComplexToPolar(freqSTFT)
+	//} else {
+	//lFreqSTFT = shapee.ComputeSTFT(freqWav[0], winShift, winLen)
+	//rFreqSTFT = shapee.ComputeSTFT(freqWav[1], winShift, winLen)
+	//lFreqMags, lFreqPhases = shapee.ComplexToPolar(lFreqSTFT)
+	//rFreqMags, rFreqPhases = shapee.ComplexToPolar(rFreqSTFT)
+	//}
 
-	freqSTFT = shapee.PolarToComplex(freqMags, freqPhases)
+	iSTFTResult := make([][]float64, int(freqFormat.NumChannels))
+	for channel := 0; channel < int(freqFormat.NumChannels); channel++ {
+		freqSTFT := shapee.ComputeSTFT(freqWav[channel], winShift, winLen)
+		freqMags, freqPhases := shapee.ComplexToPolar(freqSTFT)
+		freqSTFT = shapee.PolarToComplex(freqMags, freqPhases)
+		iSTFTResult[channel] = shapee.ComputeISTFT(freqSTFT, winShift)
+	}
+	shapee.ExportAudio(iSTFTResult, freqFormat, *outPath)
 
 	//if ampFormat.NumChannels == 1 {
 	//ampMag, ampPhase := shapee.ComputeSTFT(ampW, winShift, winLen)
 	//} else {
 	//ampMag, ampPhase := shapee.ComputeSTFT(ampW, winShift, winLen)
 	//}
-
-	iSTFTResult := shapee.ComputeISTFT(freqSTFT, winShift)
-	shapee.ExportAudio(iSTFTResult, freqFormat, *outPath)
 
 	// So Go doesn't get mad at me:
 	//fmt.Println(freqWav[0])
