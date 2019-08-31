@@ -81,7 +81,6 @@ func ComputeISTFT(stft [][]complex128, winShift int) []float64 {
 			max = math.Abs(wave[i])
 		}
 	}
-	fmt.Printf("Max: %f\n", max)
 	for i := range wave {
 		if math.Abs(wave[i]) < max {
 			wave[i] = 0.5 * (wave[i] / max)
