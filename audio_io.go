@@ -68,7 +68,7 @@ func ExportWavAudio(wave [][]float64, format *audio.Format, outPath string) {
 	err = f.Close()
 	check(err)
 
-	fmt.Printf("   Done.\nResult exported to %s\n\n", outPath)
+	fmt.Printf("   Done.\n\nResult exported to %s\n\n", outPath)
 }
 
 func check(err error) {

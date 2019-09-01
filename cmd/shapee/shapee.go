@@ -11,9 +11,9 @@ import (
 func main() {
 
 	inFreqPath := flag.String("if",
-		"./music/objekt.wav", "Filepath to frequency reference audio.")
+		"./music/audio_a.wav", "Filepath to frequency reference audio.")
 	inAmpPath := flag.String("ia",
-		"./music/olixl.wav", "Filepath to amplitude reference audio.")
+		"./music/audio_b.wav", "Filepath to amplitude reference audio.")
 	outPath := flag.String("o",
 		"./music/result.wav", "Output audio filepath.")
 	winLen := *(flag.Int("stft_len", 256,
