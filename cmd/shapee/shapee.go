@@ -16,13 +16,17 @@ func main() {
 		"./music/audio_b.wav", "Filepath to amplitude reference audio.")
 	outPath := flag.String("o",
 		"./music/result.wav", "Output audio filepath.")
-	winLen := *(flag.Int("stft_len", 256,
-		"STFT window size in number of samples."))
-	winShift := *(flag.Int("stft_shift", 50,
-		"STFT window shift in number of samples."))
-	w := *(flag.Int("w", 4,
-		"Number of DFT filters for frequnecy shaping."))
+	winLenP := flag.Int("stft_len", 256,
+		"STFT window size in number of samples.")
+	winShiftP := flag.Int("stft_shift", 50,
+		"STFT window shift in number of samples.")
+	wP := flag.Int("w", 4,
+		"Number of DFT filters for frequnecy shaping.")
 	flag.Parse()
+
+	winLen := *winLenP
+	winShift := *winShiftP
+	w := *wP
 
 	// Embed greeting into binary when building:
 	greetBox := packr.NewBox("../../packrbox")
