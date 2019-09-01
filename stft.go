@@ -12,7 +12,7 @@ import (
 // ComputeSTFT computes the STFT of the input waveform and returns
 // it in complex form. It uses a Hamming window.
 func ComputeSTFT(wave []float64, winShift int, winLen int) [][]complex128 {
-	fmt.Printf("Performing STFT...\n")
+	fmt.Printf("      Performing STFT... ")
 
 	num_windows := int(math.Floor(float64(len(wave)) / float64(winShift)))
 
@@ -46,12 +46,13 @@ func ComputeSTFT(wave []float64, winShift int, winLen int) [][]complex128 {
 
 	waitGroup.Wait()
 
+	fmt.Printf("                 Done.\n")
 	return stft
 }
 
 // ComputeISTFT recovers the time-series from an STFT in complex form.
 func ComputeISTFT(stft [][]complex128, winShift int) []float64 {
-	fmt.Println("Calculating iSTFT")
+	fmt.Printf("      Recovering time-series (iSTFT)...")
 	wave := make([]float64, winShift*len(stft)+(2*len(stft[0])))
 	realiFFTs := make([][]float64, len(stft))
 
@@ -88,6 +89,8 @@ func ComputeISTFT(stft [][]complex128, winShift int) []float64 {
 			wave[i] = 0.5
 		}
 	}
+
+	fmt.Printf("   Done.\n\n")
 
 	return wave
 }
