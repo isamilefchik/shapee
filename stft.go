@@ -52,7 +52,7 @@ func ComputeSTFT(wave []float64, winShift int, winLen int) [][]complex128 {
 
 // ComputeISTFT recovers the time-series from an STFT in complex form.
 func ComputeISTFT(stft [][]complex128, winShift int) []float64 {
-	fmt.Printf("      Recovering time-series (iSTFT)...")
+	fmt.Printf("   Recovering time-series (iSTFT)...")
 	wave := make([]float64, winShift*len(stft)+(2*len(stft[0])))
 	realiFFTs := make([][]float64, len(stft))
 
@@ -90,7 +90,7 @@ func ComputeISTFT(stft [][]complex128, winShift int) []float64 {
 		}
 	}
 
-	fmt.Printf("   Done.\n\n")
+	fmt.Printf("      Done.\n\n")
 
 	return wave
 }

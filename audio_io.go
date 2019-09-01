@@ -28,7 +28,7 @@ func ImportWavAudio(inputPath string) ([][]float64, *audio.Format) {
 	for channel := range wave {
 		wave[channel] = make([]float64, buf.NumFrames())
 		for j := range wave[channel] {
-			wave[channel][j] = float64(buf.Data[j*2+channel]) /
+			wave[channel][j] = float64(buf.Data[j*len(wave)+channel]) /
 				math.Pow(2, float64(buf.SourceBitDepth)-1)
 		}
 	}
@@ -53,7 +53,7 @@ func ExportWavAudio(wave [][]float64, format *audio.Format, outPath string) {
 	fmt.Printf("   Converting to int...\n")
 	for i := range wave[0] {
 		for channel := range wave {
-			buf.Data[i*2+channel] = int(wave[channel][i] *
+			buf.Data[i*len(wave)+channel] = int(wave[channel][i] *
 				math.Pow(2, float64(16)))
 		}
 	}
@@ -68,7 +68,7 @@ func ExportWavAudio(wave [][]float64, format *audio.Format, outPath string) {
 	err = f.Close()
 	check(err)
 
-	fmt.Printf("   Done.\nResult exported to %s\n", outPath)
+	fmt.Printf("   Done.\nResult exported to %s\n\n", outPath)
 }
 
 func check(err error) {

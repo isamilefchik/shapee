@@ -3,11 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gobuffalo/packr"
 	"github.com/isamilefchik/shapee"
 	"os"
 )
 
 func main() {
+
 	inFreqPath := flag.String("if",
 		"./music/objekt.wav", "Filepath to frequency reference audio.")
 	inAmpPath := flag.String("ia",
@@ -21,6 +23,11 @@ func main() {
 	w := *(flag.Int("w", 4,
 		"Number of DFT filters for frequnecy shaping."))
 	flag.Parse()
+
+	// Embed greeting into binary when building:
+	greetBox := packr.NewBox("../../packrbox")
+	greeting, _ := greetBox.Find("greeting.txt")
+	fmt.Printf("\n%s\n", greeting)
 
 	freqWav, freqFormat := shapee.ImportWavAudio(*inFreqPath)
 	ampWav, ampFormat := shapee.ImportWavAudio(*inAmpPath)
@@ -51,8 +58,8 @@ func main() {
 		ampSTFT := shapee.ComputeSTFT(ampWav[channel], winShift, winLen)
 		ampMag, _ := shapee.ComplexToPolar(ampSTFT)
 
-		pack := &shapee.ShaperPack{ampMag, freqMag, freqPhase, w}
-		resultMag, resultPhase := shapee.FreqShape(pack)
+		shaper := &shapee.Shaper{ampMag, freqMag, freqPhase, w}
+		resultMag, resultPhase := shaper.FreqShape()
 		resultSTFT := shapee.PolarToComplex(resultMag, resultPhase)
 
 		result[channel] = shapee.ComputeISTFT(resultSTFT, winShift)

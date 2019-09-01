@@ -4,7 +4,9 @@ import (
 	"fmt"
 )
 
-type ShaperPack struct {
+// Shaper is a simple struct for containing the data needed
+// for the FreqShape function.
+type Shaper struct {
 	AmpMag    [][]float64
 	FreqMag   [][]float64
 	FreqPhase [][]float64
@@ -13,13 +15,13 @@ type ShaperPack struct {
 
 // FreqShape completes the audio transformation as proposed in
 // Christopher Penrose's paper "Frequency Shaping of Audio Signals".
-func FreqShape(pack *ShaperPack) ([][]float64, [][]float64) {
+func (shaper *Shaper) FreqShape() ([][]float64, [][]float64) {
 	fmt.Printf("\U0001f608 Frequency shaping... ")
 
-	aMag := pack.AmpMag
-	fMag := pack.FreqMag
-	fPhase := pack.FreqPhase
-	w := pack.W
+	aMag := shaper.AmpMag
+	fMag := shaper.FreqMag
+	fPhase := shaper.FreqPhase
+	w := shaper.W
 
 	bigN := len(fMag[0])
 	s := make([][]float64, len(fMag))
