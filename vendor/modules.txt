@@ -1,0 +1,27 @@
+# github.com/go-audio/audio v1.0.0
+github.com/go-audio/audio
+# github.com/go-audio/riff v1.0.0
+github.com/go-audio/riff
+# github.com/go-audio/wav v1.0.0
+github.com/go-audio/wav
+# github.com/gobuffalo/envy v1.7.0
+github.com/gobuffalo/envy
+# github.com/gobuffalo/packd v0.3.0
+github.com/gobuffalo/packd
+github.com/gobuffalo/packd/internal/takeon/github.com/markbates/errx
+# github.com/gobuffalo/packr v1.30.1
+github.com/gobuffalo/packr
+# github.com/joho/godotenv v1.3.0
+github.com/joho/godotenv
+# github.com/mjibson/go-dsp v0.0.0-20180508042940-11479a337f12
+github.com/mjibson/go-dsp/fft
+github.com/mjibson/go-dsp/window
+github.com/mjibson/go-dsp/dsputils
+# github.com/rogpeppe/go-internal v1.3.0
+github.com/rogpeppe/go-internal/modfile
+github.com/rogpeppe/go-internal/module
+github.com/rogpeppe/go-internal/semver
+# github.com/youpy/go-riff v0.0.0-20131220112943-557d78c11efb
+github.com/youpy/go-riff
+# github.com/youpy/go-wav v0.0.0-20160223082350-b63a9887d320
+github.com/youpy/go-wav

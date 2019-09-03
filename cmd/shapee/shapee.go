@@ -10,17 +10,17 @@ import (
 
 func main() {
 
-	inFreqPath := flag.String("if",
-		"./music/audio_a.wav", "Filepath to frequency reference audio.")
 	inAmpPath := flag.String("ia",
-		"./music/audio_b.wav", "Filepath to amplitude reference audio.")
+		"./music/lanskyTimbre.wav", "Filepath to amplitude reference audio.")
+	inFreqPath := flag.String("if",
+		"./music/lanskyFreq.wav", "Filepath to frequency reference audio.")
 	outPath := flag.String("o",
 		"./music/result.wav", "Output audio filepath.")
-	winLenP := flag.Int("stft_len", 256,
+	winLenP := flag.Int("stft_len", 2048,
 		"STFT window size in number of samples.")
-	winShiftP := flag.Int("stft_shift", 50,
+	winShiftP := flag.Int("stft_shift", 100,
 		"STFT window shift in number of samples.")
-	wP := flag.Int("w", 4,
+	wP := flag.Int("w", 5,
 		"Number of DFT filters for frequnecy shaping.")
 	flag.Parse()
 
