@@ -48,7 +48,11 @@ func ExportWavAudio(wave [][]float64, format *audio.Format, outPath string) {
 
 	encoder := wav.NewEncoder(f, format.SampleRate, 16, format.NumChannels, 1)
 
-	buf := audio.IntBuffer{format, make([]int, len(wave[0])*len(wave)), 16}
+	buf := audio.IntBuffer{
+		Format:         format,
+		Data:           make([]int, len(wave[0])*len(wave)),
+		SourceBitDepth: 16,
+	}
 
 	fmt.Printf("   Converting to int...\n")
 	for i := range wave[0] {
